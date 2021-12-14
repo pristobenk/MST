@@ -16,8 +16,15 @@ namespace MitraSolusiTelematika.Services
         Task<PagingResponseModel<List<KodePos>>> SearchAsync(string strSearch, int currentPageNumber, int pageSize);
         List<SelectListItem> GetPropinsiList();
         IEnumerable<string> GetKabupatenByNamaPropinsi(string nama);
+        IEnumerable<SelectListItem> GetKabupatenByNamaPropinsiAsSelectListItem(string nama);
         IEnumerable<string> GetKecamatanByNamaKabupaten(string nama);
+        IEnumerable<SelectListItem> GetKecamatanByNamaKabupatenAsSelectListItem(string nama);
         IEnumerable<string> GetDesaByNamaKecamatan(string nama);
+        IEnumerable<SelectListItem> GetDesaByNamaKecamatanAsSelectListItem(string nama);
+        Task Save(KodePos model);
+        Task Update(KodePos model);
+        KodePos GetById(int id);
+        Task HapusAsync(int id);
     }
     public class KodePosServices : IKodePosService
     {
@@ -31,9 +38,9 @@ namespace MitraSolusiTelematika.Services
         public IEnumerable<string> GetDesaByNamaKecamatan(string nama)
         {
             var query = _Context.KodePos
-                        .Where(x => x.Kabupaten == nama)
-                        .OrderBy(x => x.Kecamatan)
-                        .Select(t => t.Kecamatan)
+                        .Where(x => x.Kecamatan == nama)
+                        .OrderBy(x => x.Kelurahan)
+                        .Select(t => t.Kelurahan)
                         .Distinct()
                         .ToList();
 
@@ -51,6 +58,64 @@ namespace MitraSolusiTelematika.Services
 
             return query;
         }
+
+        public IEnumerable<SelectListItem> GetDesaByNamaKecamatanAsSelectListItem(string nama)
+        {
+            List<SelectListItem> result = new List<SelectListItem>();
+            var query = _Context.KodePos
+                        .Where(x => x.Kecamatan == nama)
+                        .OrderBy(x => x.Kelurahan)
+                        .Select(t => t.Kelurahan)
+                        .Distinct()
+                        .ToList();
+
+            foreach (var p in query)
+            {
+                result.Add(new SelectListItem { Text = p, Value = p });
+            }
+
+            return result;
+        }
+
+        public IEnumerable<SelectListItem> GetKabupatenByNamaPropinsiAsSelectListItem(string nama)
+        {
+            List<SelectListItem> result = new List<SelectListItem>();
+            var query = _Context.KodePos
+                        .Where(x => x.Propinsi == nama)
+                        .OrderBy(x => x.Kabupaten)
+                        .Select(t => t.Kabupaten)
+                        .Distinct()
+                        .ToList();
+
+            foreach (var p in query)
+            {
+                result.Add(new SelectListItem { Text = p, Value = p });
+            }
+
+            return result;
+        }
+
+        public IEnumerable<SelectListItem> GetKecamatanByNamaKabupatenAsSelectListItem(string nama)
+        {
+            List<SelectListItem> result = new List<SelectListItem>();
+
+            var query = _Context.KodePos
+                           .Where(x => x.Kabupaten == nama)
+                           .OrderBy(x => x.Kecamatan)
+                           .Select(t => t.Kecamatan)
+                           .Distinct()
+                           .ToList();
+
+            foreach (var p in query)
+            {
+                result.Add(new SelectListItem { Text = p, Value = p });
+            }
+
+            return result;
+
+
+        }
+
 
         public IEnumerable<string> GetKecamatanByNamaKabupaten(string nama)
         {
@@ -96,6 +161,25 @@ namespace MitraSolusiTelematika.Services
             return result;
         }
 
+        public async Task HapusAsync(int id)
+        {
+            var obj = _Context.KodePos.Where(x => x.Id == id).SingleOrDefault();
+             _Context.KodePos.Remove(obj);
+            await _Context.SaveChangesAsync();
+        }
+
+        public async Task Save(KodePos model)
+        {
+            _Context.KodePos.Add(model);
+            await _Context.SaveChangesAsync();
+        }
+
+        public async Task Update(KodePos model)
+        {
+            _Context.KodePos.Update(model);
+            await _Context.SaveChangesAsync();
+        }
+
         public async Task<PagingResponseModel<List<KodePos>>> SearchAsync(string strSearch, int currentPageNumber, int pageSize)
         {
 
@@ -116,6 +200,11 @@ namespace MitraSolusiTelematika.Services
             return new PagingResponseModel<List<KodePos>>(data, total, currentPageNumber, pageSize);
 
 
+        }
+
+        public KodePos GetById(int id)
+        {
+            return _Context.KodePos.Where(x => x.Id == id).FirstOrDefault();
         }
     }
 }

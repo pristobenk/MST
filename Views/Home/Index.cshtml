@@ -28,21 +28,21 @@
                     <th>Kecamatan</th>
                     <th>Kabupaten</th>
                     <th>Propinsi</th>
-                    <th><a href="/home/addnew" >Tambah</a> </th>
+                    <th><a href="/home/addnew"  class="btn btn-primary" >Tambah</a> </th>
                 </tr>
             </thead>
             <tbody>
             @foreach(var kodepos in Model.Data)
             {
-                <tr>
+                <tr id="@kodepos.Id">
                     <td>@kodepos.NoKodePos</td>
                     <td>@kodepos.Kelurahan</td>
                     <td>@kodepos.Kecamatan</td>
                     <td>@kodepos.Kabupaten</td>
                     <td>@kodepos.Propinsi</td>
                     <td>
-                        <a href="" class="btn btn-warning">Edit</a>
-                        <button class="btn btn-danger">Hapus</button>
+                        <a href="/Home/Edit/@kodepos.Id" class="btn btn-warning">Edit</a>
+                        <button class="btn btn-danger" onclick="Hapus('@kodepos.Id')" >Hapus</button>
                     </td>
                 </tr>
             }
@@ -101,3 +101,33 @@
         </table>
     </div>
 </div>
+
+@section Scripts{ 
+  <script>
+      function Hapus(id) {
+
+          if (confirm('yakin akan menghapus data ini?')) {
+              
+              $.ajax({
+                  url: '/home/hapusdata/' + id,
+                  dataType: "json",
+                  contentType: "application/json",
+                  cache: false,
+                  type: 'GET',
+                  data: JSON.stringify({ Id: id})
+              })
+                  .done(function (result) {
+                      $('#'+id).remove();
+                      alert("data berhasil dihapus!")
+                      
+
+                  })
+                  .fail(function () {
+                      alert('gagal menghapus data');
+                  });
+              
+          
+          }
+        };
+  </script>
+}

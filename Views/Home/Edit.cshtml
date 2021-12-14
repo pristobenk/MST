@@ -1,5 +1,120 @@
-﻿@*
-    For more information on enabling MVC for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
-*@
+﻿@model MitraSolusiTelematika.Models.KodePos
 @{
 }
+
+<br />
+<br />
+
+
+<div class="row">
+    <div class="col-6">
+        <h4>Edit</h4>
+        <form id="AddNew" asp-action="Update" method="post">
+            <input type="hidden" asp-for="Id"/>
+            <div class="mb-3">
+                <label class="form-label">Kode Pos</label>
+                <input asp-for="NoKodePos" class="form-control">
+                <span asp-validation-for="NoKodePos" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label>Propinsi</label>
+                <Select asp-for="Propinsi" class="form-control" asp-items="ViewBag.PropinsiList">
+                    <option disabled selected value="">Pilih Propinsi</option>
+                </Select>
+                <span asp-validation-for="Propinsi" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label>Kabupaten</label>
+                <Select asp-for="Kabupaten" class="form-control" asp-items="ViewBag.KabupatenList">
+                    <option disabled selected value="">Pilih Kabupaten</option>
+                </Select>
+                <span asp-validation-for=@Model.Kabupaten class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label>Kecamatan</label>
+                <Select asp-for="Kecamatan" class="form-control" asp-items="ViewBag.KecamatanList">
+                    <option disabled selected value="">Pilih Kecamatan</option>
+                </Select>
+                <span asp-validation-for=@Model.Kecamatan class="text-danger"></span>
+            </div>
+
+
+            <div class="mb-3">
+                <label>Kelurahan</label>
+                <Select asp-for="Kelurahan" class="form-control" asp-items="ViewBag.KeluarahanList">
+                    <option disabled selected value="">Pilih Kelurahan</option>
+                </Select>
+                <span asp-validation-for=@Model.Kelurahan class="text-danger"></span>
+            </div>
+
+            <button type="button" class="btn btn-primary btn-submit">Simpan</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts{
+    <script>
+
+        SetupAjaxForm("#AddNew");
+
+        $('#Propinsi').change(function() {
+        var url = '@Url.Content("~/")' + "Home/GetKabupatenByNamaPropinsi";
+        var dllSource = "#Propinsi";
+
+        $.getJSON(url, { nama: $(dllSource).val() }, function(data) {
+            var items = '';
+
+            $("#Kabupaten").empty();
+            $.each(data, function(i, name) {
+
+                items += "<option value='" + name + "'>" + name + "</option>";
+
+            });
+            $("#Kabupaten").html(items);
+            $("#Kabupaten").val("Select");
+            $("#Kecamatan").val("Select");
+            $("#Desa").val("Select");
+        });
+        })
+
+    $('#Kabupaten').change(function() {
+        var url = '@Url.Content("~/")' + "Home/GetKecamatanByNamaKabupaten";
+        var dllSource = "#Kabupaten";
+
+        $.getJSON(url, { nama: $(dllSource).val() }, function(data) {
+            var items = '';
+            $("#Kecamatan").empty();
+            $.each(data, function(i, name) {
+
+                items += "<option value='" + name + "'>" + name + "</option>";
+
+            });
+            $("#Kecamatan").html(items);
+            $("#Kecamatan").val("Select");
+            $("#Desa").val("Select");
+        });
+    })
+
+
+        $('#Kecamatan').change(function() {
+        var url = '@Url.Content("~/")' + "Home/GetDesaByNamaKecamatan";
+        var dllSource = "#Kecamatan";
+            
+        $.getJSON(url, { nama: $(dllSource).val() }, function(data) {
+            var items = '';
+            $("#Kelurahan").empty();
+            $.each(data, function(i, name) {
+
+                items += "<option value='" + name + "'>" + name + "</option>";
+
+            });
+            $("#Kelurahan").html(items);
+            $("#Kelurahan").val("Select");
+        });
+    })
+    </script>
+}
+
