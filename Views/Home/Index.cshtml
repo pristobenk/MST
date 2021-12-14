@@ -1,0 +1,103 @@
+﻿@model PagingResponseModel<List<KodePos>>
+
+@{
+    ViewData["Title"] = "Kode Pos";
+    var prev = Model.CurrentPageNumber - 1;
+    var next = Model.CurrentPageNumber + 1;
+}
+
+<div class="row">
+    <div class="col-12">
+        <h4>Daftar Kodepos</h4>
+        <div>Jumlah record @Model.TotalRecords.ToString()</div>
+
+        <form  id="search" asp-action="SearchAsync">
+            <input id="strSearh" name="strSearh" type="text" placeholder="Cari" /> <span><button class="btn btn-primary" type="submit">Cari</button></span>
+        </form>
+
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Kode</th>
+                    <th>Kelurahan</th>
+                    <th>Kecamatan</th>
+                    <th>Kabupaten</th>
+                    <th>Propinsi</th>
+                    <th><a href="/home/addnew" >Tambah</a> </th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach(var kodepos in Model.Data)
+            {
+                <tr>
+                    <td>@kodepos.NoKodePos</td>
+                    <td>@kodepos.Kelurahan</td>
+                    <td>@kodepos.Kecamatan</td>
+                    <td>@kodepos.Kabupaten</td>
+                    <td>@kodepos.Propinsi</td>
+                    <td>
+                        <a href="" class="btn btn-warning">Edit</a>
+                        <button class="btn btn-danger">Hapus</button>
+                    </td>
+                </tr>
+            }
+            <tr>
+                <td colspan="3">
+                    @if (ViewBag.Mode == "Normal")
+                    {
+                        @if (Model.HasPreviousPage)
+                        {
+                            <a href="/@prev/10" class="btn btn-primary">Sebelumnya</a>
+                        }
+
+                        @if (Model.HasNextPage)
+                        {
+                            <a href="/@next/10" class="btn btn-primary">Lanjut</a>
+                        }
+                    }
+                    else
+                    {
+
+                       
+
+                        <table class="table-borderless">
+                            <tr>
+                                <td>
+                                    @if (Model.HasPreviousPage)
+                                    {
+                                        <form id="searchPrev" asp-action="SearchAsync">
+                                            <input id="strSearh" name="strSearh" type="hidden" value="@ViewBag.strSearch" />
+                                            <input id="currentPageNumber" name="currentPageNumber" type="hidden" value="@prev" />
+                                            <input id="pageSize" name="pageSize" type="hidden" value="10" />
+                                            <span><button class="btn btn-primary" type="submit">Sebelumnya</button></span>
+                                        </form>
+                                    }
+                                    </td>
+                                <td>
+                                    @if (Model.HasNextPage)
+                                    {
+                                        <form id="searchNext" asp-action="SearchAsync">
+                                            <input id="strSearh" name="strSearh" type="hidden" value="@ViewBag.strSearch" />
+                                            <input id="currentPageNumber" name="currentPageNumber" type="hidden" value="@next" />
+                                            <input id="pageSize" name="pageSize" type="hidden" value="10" />
+                                            <span><button class="btn btn-primary" type="submit">Lanjut</button></span>
+                                        </form>
+                                    }
+                                    </td>
+                            </tr>
+                        </table>
+                    }
+                </td>
+                <td colspan="2">
+                    Halaman @Model.CurrentPageNumber dari @Model.TotalPages
+                </td>
+            </tr>  
+            </tbody>
+        </table>
+    </div>
+</div>

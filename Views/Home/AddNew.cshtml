@@ -1,0 +1,101 @@
+﻿@model MitraSolusiTelematika.Models.KodePos 
+@{
+}
+
+<br/>
+<br />
+
+
+<div class="row">
+    <div class="col-6">
+        <h4>Tambah</h4>
+        <form>
+            <div class="mb-3">
+                <label class="form-label">Kode Pos</label>
+                <input asp-for="NoKodePos" class="form-control">
+                <span asp-validation-for="NoKodePos" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label>Propinsi</label>
+                <Select asp-for="Propinsi" class="form-control" asp-items="ViewBag.PropinsiList">
+                    <option disabled selected value="">Pilih Propinsi</option>
+                </Select>
+                <span asp-validation-for="Propinsi" class="text-danger"></span>
+            </div>
+            
+            <div class="mb-3">
+                <label>Propinsi</label>
+                <Select asp-for="Kabupaten" class="form-control">
+                    <option disabled selected value="">Pilih Kabupaten</option>
+                </Select>
+                <span asp-validation-for=@Model.Kabupaten class="text-danger"></span>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Simpan</button>
+        </form>
+    </div>
+</div>
+
+@section Scripts{ 
+    <script>
+
+        $('#Propinsi').change(function() {
+        var url = '@Url.Content("~/")' + "Home/GetKabupatenByNamaPropinsi";
+        var dllSource = "#Propinsi";
+            alert($(dllSource).val());
+        $.getJSON(url, { nama: $(dllSource).val() }, function(data) {
+            var items = '';
+            alert('test');
+            $("#Kabupaten").empty();
+            $.each(data, function(i, name) {
+
+                items += "<option value='" + name + "'>" + name + "</option>";
+
+            });
+            $("#Kabupaten").html(items);
+            $("#Kabupaten").val("Select");
+            $("#Kecamatan").val("Select");
+            $("#Desa").val("Select");
+        });
+        })
+
+        //KABUPATEN SEKARANG
+    $('#Kabupaten').change(function() {
+        var url = '@Url.Content("~/")' + "Home/GetKecamatanByNamaKabupaten";
+        var dllSource = "#Kabupaten";
+
+        $.getJSON(url, { id: $(dllSource).val() }, function(data) {
+            var items = '';
+            $("#Kecamatan").empty();
+            $.each(data, function(i, kecamatan) {
+
+                items += "<option value='" + kecamatan.Name + "'>" + kecamatan.Name + "</option>";
+
+            });
+            $("#Kecamatan").html(items);
+            $("#Kecamatan").val("Select");
+            $("#Desa").val("Select");
+        });
+    })
+
+    //KECAMATAN ASAL
+        $('#Kecamatan').change(function() {
+        var url = '@Url.Content("~/")' + "Home/GetDesaByNamaKecamatan";
+        var dllSource = "#Kecamatan";
+
+        $.getJSON(url, { id: $(dllSource).val() }, function(data) {
+            var items = '';
+            $("#Desa").empty();
+            $.each(data, function(i, desa) {
+
+                items += "<option value='" + desa.Name + "'>" + desa.Name + "</option>";
+
+            });
+            $("#Desa").html(items);
+            $("#Desa").val("Select");
+        });
+    })
+    </script>
+}
+
